@@ -19,10 +19,12 @@ export const TodosList: React.FC<TodosListProps> = observer(({todoStore}) => {
       <br/>
       Remaining: {todoStore.status.remaining}
     </div>
+    <div> {todoStore.nextTodo} </div>
     <ul>
       {todoStore.todos.map(todo => <li id={`${todo.id}`}>
-          {todo.title} completion status:
+          <div onClick={(event) => todoStore.updateTodo(todo.id)}> {todo.title} completion status: </div>
           <input type="checkbox" checked={todo.completed} onChange={(event)=>todoStore.toggleTodo(todo.id)} />
+          <button className="deleteButton" onClick={(event)=> todoStore.deleteTodo(todo.id)}>delete</button>
         </li>)}
     </ul>
   </div>

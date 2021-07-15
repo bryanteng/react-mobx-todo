@@ -1,38 +1,24 @@
 import { makeObservable, observable, action, computed} from 'mobx'
+import { Todo } from '../components/Todo'
 
-interface TodoItem{
-  id: number
-  title: string
-  completed: boolean
-}
-
-let _nextId = 0
-function nextId(){ _nextId++; return _nextId }
-
-const aTodo: TodoItem ={
-  id: nextId(),
-  title: "a todo",
-  completed: false
-}
+const bTodo: Todo = new Todo("b todo")
 
 export class TodoStoreClass{
-  todos: TodoItem[] = [aTodo]
+  todos: Todo[] = [bTodo]
 
   constructor(){
     makeObservable(this, {
       todos: observable,
       addTodo: action,
       toggleTodo: action,
-      status: computed
+      deleteTodo: action,
+      status: computed,
+      nextTodo: computed
     })
   }
 
   addTodo(title: string){
-    const item: TodoItem ={
-      id: nextId(),
-      title,
-      completed: false
-    }
+    const item: Todo = new Todo(title)
     this.todos.push(item)
     return true
   }
@@ -44,6 +30,22 @@ export class TodoStoreClass{
     }else alert("todo not found")
   }
 
+  deleteTodo(id: number){
+    let temp = this.todos.filter(todo => todo.id !== id)
+    this.todos = temp
+    return true
+  }
+
+  updateTodo(id:number){
+    let update = prompt("Update todo?", "")
+    if(update !== null && update !== ""){
+      let found = this.todos.find(todo => id === todo.id)
+      if(found) found.title = update
+    }else return false
+
+    return true
+  }
+
   get status(){
     let completed = 0
     let remaining = 0
@@ -52,6 +54,12 @@ export class TodoStoreClass{
       else remaining++
     })
     return {completed,remaining}
+  }
+
+  get nextTodo(){
+    let found = this.todos.find(todo => !todo.completed )
+    if(found) return `Next todo: ${found.title}`
+    return false
   }
 
 }
